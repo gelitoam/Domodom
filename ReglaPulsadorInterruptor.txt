@@ -37,3 +37,8 @@ endon
 
 on SimpleClick do
  if ModoAuto#Switch = 1
+  event CambiaEstadoAutoOn
+ else
+  event CambiaEstadoOffOn
+ endif
+endon
