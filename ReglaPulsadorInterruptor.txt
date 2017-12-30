@@ -1,0 +1,39 @@
+//Usar para encender y apagar un dummy tipo switch (Pulsador) con un segundo valor (PrimeraPulsacion)para registrar la primera pulsación y otro switch/idx (ModoAuto) para auto/manual
+
+on System#Boot do //inicializar variables a 0
+ TaskValueSet 1,2,0
+ TaskValueSet 2,1,0
+endon
+
+on Pulsador#Switch do
+  if Pulsador#Switch = 0
+    event Pulsado0
+  else
+    event Pulsado1 // como no deja anidar otro if, se registra el evento para usarlo como trigger del siguiente if
+  endif
+endon
+
+on Pulsado0 do
+ if [Pulsador#DobleClick] = 1 //Si se libera tras un click múltiple
+  TaskValueSet 1,2,0 // Se vuelve a poner a cero el DobleClick
+ else
+  timerSet,1,0 //se inicia el temporizador de 1s que limita el doble click
+ endif
+endon
+  
+  
+on Pulsado1 do
+ timerSet,1,0 //Desactiva el timer que limita el tiempo para doble click
+ if [Pulsador#PrimeraPulsacion] = 0 //Si no se ha registrado una pulsación antes
+  TaskValueSet 1,2,1 //Pone la segunda variable del primer switch a 1 (se registra la primera pulsación)
+ else
+  event DobleClick 
+ endif
+endon
+
+on rules#timer=1 do //Si se agota el tiempo es un clic simple
+ event SimpleClick
+endon
+
+on SimpleClick do
+ if ModoAuto#Switch = 1
